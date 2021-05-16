@@ -1,10 +1,11 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=amcsgroup.com
-NAMESPACE=devops
+NAMESPACE=amcs
 NAME=customercontrol
 BINARY=terraform-provider-${NAME}
-VERSION=0.2
-OS_ARCH=amd64
+VERSION=0.0.1
+OS_ARCH=windows_amd64
+SIDELOAD_PATH=%APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
 default: install
 
@@ -26,8 +27,8 @@ release:
 	GOOS=windows GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_windows_amd64
 
 install: build
-	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	if not exist ${SIDELOAD_PATH} mkdir -p ${SIDELOAD_PATH}
+	move ${BINARY} %APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
 test: 
 	go test -i $(TEST) || exit 1                                                   

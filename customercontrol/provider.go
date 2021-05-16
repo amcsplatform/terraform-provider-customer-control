@@ -19,7 +19,7 @@ func Provider() *schema.Provider {
 			},
 			"privateKey": &schema.Schema{
 				Type: schema.TypeString,
-				Optional: false,
+				Required: true,
 			},
 		},
 		ResourcesMap:   map[string]*schema.Resource{},

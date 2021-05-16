@@ -1,20 +1,22 @@
 terraform {
   required_providers {
-    hashicups = {
-      version = "0.2"
-      source  = "hashicorp.com/edu/hashicups"
+    customercontrol = {
+      version = "0.0.1"
+      source  = "amcsgroup.com/amcs/customercontrol"
     }
   }
 }
 
-provider "hashicups" {}
-
-module "psl" {
-  source = "./coffee"
-
-  coffee_name = "Packer Spiced Latte"
+provider "customercontrol" {
+  url = "https://customercontrol-dev.amcsgroup.com"
+  privateKey = ""
 }
 
-output "psl" {
-  value = module.psl.coffee
+data "customercontrol_domain" "test" {
+  domain_name = "d1-p83-svc-publisher-proxy.amcsplatform.com"
 }
+
+output "domain" {
+  value = data.customercontrol_domain.id
+}
+
