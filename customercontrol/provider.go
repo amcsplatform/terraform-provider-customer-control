@@ -3,7 +3,7 @@ package customercontrol
 import (
 	"context"
 
-	"dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
+	cc "dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -13,33 +13,39 @@ func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"url": &schema.Schema{
-				Type: schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("CUSTOMERCONTROL_URL", "https://customercontrol-dev.amcsgroup.io"),
 			},
-			"privateKey": &schema.Schema{
-				Type: schema.TypeString,
+			"private_key": &schema.Schema{
+				Type:     schema.TypeString,
 				Required: true,
 			},
 		},
-		ResourcesMap:   map[string]*schema.Resource{},
-		DataSourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{},
+		DataSourcesMap: map[string]*schema.Resource{
+			"customercontrol_haproxy_domain": dataSourceHAProxyDomain(),
+		},
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	url := d.Get("url").(string)
-	privateKey := d.Get("privateKey").(string)
+	privateKey := d.Get("private_key").(string)
 
 	var diags diag.Diagnostics
+	var client *cc.CustomerControlClient
+	var err error
 
 	if (url != "") && (privateKey != "") {
-		client, err := customercontrolclient.NewClient(&url, &privateKey)
+		client, err = cc.NewClient(&url, &privateKey)
 
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary: "Unable to create CustomerControl client",
+				Summary:  "Unable to create CustomerControl client",
+				Detail: err.Error(),
 			})
 
 			return nil, diags
@@ -49,7 +55,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	} else {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary: "CustomerControl URL and privateKey must be provided",
+			Summary:  "CustomerControl URL and privateKey must be provided",
 		})
 	}
 

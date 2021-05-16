@@ -8,15 +8,23 @@ terraform {
 }
 
 provider "customercontrol" {
-  url = "https://customercontrol-dev.amcsgroup.com"
-  privateKey = ""
+  url = "https://customercontrol-dev.amcsgroup.io"
+  private_key = ""
 }
 
-data "customercontrol_domain" "test" {
+data "customercontrol_haproxy_domain" "test" {
   domain_name = "d1-p83-svc-publisher-proxy.amcsplatform.com"
 }
 
-output "domain" {
-  value = data.customercontrol_domain.id
+output "domain_id" {
+  value = data.customercontrol_haproxy_domain.test.id
+}
+
+output "domain_name" {
+  value = data.customercontrol_haproxy_domain.test.domain_name
+}
+
+output "domain_valid_until" {
+  value = data.customercontrol_haproxy_domain.test.valid_until
 }
 
