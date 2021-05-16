@@ -34,7 +34,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	var diags diag.Diagnostics
 
 	if (url != "") && (privateKey != "") {
-		client, err := CustomerControlClientGo.NewClient(&url, &privateKey)
+		client, err := customercontrolclient.NewClient(&url, &privateKey)
 
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
