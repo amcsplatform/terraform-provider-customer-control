@@ -22,9 +22,11 @@ func Provider() *schema.Provider {
 				Required: true,
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"customercontrol_haproxy_rule": resourceHAProxyRule(),
+		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"customercontrol_haproxy_domain": dataSourceHAProxyDomain(),
+			"customercontrol_haproxy_rule": dataSourceHAProxyRule(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

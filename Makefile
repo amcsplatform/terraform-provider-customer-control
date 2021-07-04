@@ -3,7 +3,7 @@ HOSTNAME=amcsgroup.com
 NAMESPACE=amcs
 NAME=customercontrol
 BINARY=terraform-provider-${NAME}.exe
-VERSION=0.0.1
+VERSION=0.0.14
 OS_ARCH=windows_amd64
 SIDELOAD_PATH=%APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
