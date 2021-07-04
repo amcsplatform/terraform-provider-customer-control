@@ -2,34 +2,53 @@ package customercontrol
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	cc "dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// Provider -
-func Provider() *schema.Provider {
-	return &schema.Provider{
-		Schema: map[string]*schema.Schema{
-			"url": &schema.Schema{
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CUSTOMERCONTROL_URL", "https://customercontrol-dev.amcsgroup.io"),
-			},
-			"private_key": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
-		ResourcesMap: map[string]*schema.Resource{
-			"customercontrol_haproxy_rule": resourceHAProxyRule(),
-		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"customercontrol_haproxy_rule": dataSourceHAProxyRule(),
-		},
-		ConfigureContextFunc: providerConfigure,
+func init() {
+	schema.DescriptionKind = schema.StringMarkdown
+	schema.SchemaDescriptionBuilder = func(s *schema.Schema) string {
+		desc := s.Description
+		if s.Default != nil {
+			desc += fmt.Sprintf(" Defaults to `%v`.", s.Default)
+		}
+		return strings.TrimSpace(desc)
 	}
+}
+
+func Provider() func() *schema.Provider {
+	return func() *schema.Provider {
+		p := &schema.Provider{
+			Schema: map[string]*schema.Schema{
+				"url": &schema.Schema{
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("CUSTOMERCONTROL_URL", "https://customercontrol-dev.amcsgroup.io"),
+					Description: "Url to CustomerControl API",
+				},
+				"private_key": &schema.Schema{
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "CustomerControl private key for authentication",
+				},
+			},
+			ResourcesMap: map[string]*schema.Resource{
+				"customercontrol_haproxy_rule": resourceHAProxyRule(),
+			},
+			DataSourcesMap: map[string]*schema.Resource{
+				"customercontrol_haproxy_rule": dataSourceHAProxyRule(),
+			},
+			ConfigureContextFunc: providerConfigure,
+		}
+
+		return p
+	}
+
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -47,7 +66,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
 				Summary:  "Unable to create CustomerControl client",
-				Detail: err.Error(),
+				Detail:   err.Error(),
 			})
 
 			return nil, diags
