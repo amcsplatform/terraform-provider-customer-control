@@ -21,6 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set Azure DevOps SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AZURE_DEVOPS_SSH_PRIVATE_KEY }}
+
       - name: Unshallow
         run: git fetch --prune --unshallow
 
