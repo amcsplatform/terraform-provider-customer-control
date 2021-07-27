@@ -1,4 +1,4 @@
-module terraform-provider-customercontrol
+module github.com/amcsplatform/terraform-provider-customercontrol
 
 go 1.16
 

@@ -1,4 +1,4 @@
-package customercontrol
+package provider
 
 import (
 	"context"
