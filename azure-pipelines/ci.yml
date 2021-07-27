@@ -1,0 +1,20 @@
+name: 0.1$(Rev:.r)
+
+trigger: none
+
+pool:
+  name: 'Default scale set'
+
+variables:
+  - group: amcsplatform_github
+steps:
+  - checkout: self
+    clean: true
+    persistCredentials: true
+
+  - script: |
+      git tag $(Build.BuildNumber)
+      git push origin $(Build.BuildNumber)
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $(Build.SourceBranchName)
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $(Build.BuildNumber)
+    displayName: 'Git tag'
