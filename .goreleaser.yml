@@ -11,6 +11,7 @@ builds:
       # they are unable to install libraries.
       - CGO_ENABLED=0
       - GOPRIVATE=dev.azure.com
+      - GO111MODULE=on
     mod_timestamp: '{{ .CommitTimestamp }}'
     flags:
       - -trimpath
