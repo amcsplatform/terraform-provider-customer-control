@@ -1,2 +1,2 @@
-[url "https://devops:__AZURE_DEVOPS_PAT_TOKEN__@dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo"]
-    insteadOf = https://dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo
+[url "git@ssh.dev.azure.com:v3/amcsgroup/"]
+  insteadOf = https://dev.azure.com/amcsgroup/

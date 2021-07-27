@@ -41,12 +41,8 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.PASSPHRASE }}
 
-      - name: Replace tokens
-        uses: falnyr/replace-env-vars-action@master
-        env:
-          AZURE_DEVOPS_PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
-        with:
-          filename: ./.gitconfig
+      - name: Set git config
+        run: git config --global url."https://devops:${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}@dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo".insteadOf "https://dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
