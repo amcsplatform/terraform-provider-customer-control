@@ -23,5 +23,3 @@ steps:
       git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git HEAD:$BranchName
       git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $(Build.BuildNumber)
     displayName: 'Push changes to GitHub'
-    failOnStderr: true
-    errorActionPreference: Stop
