@@ -16,9 +16,10 @@ steps:
     clean: true
     persistCredentials: true
 
-  - script: |
+  - powershell: |
+      $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
       git tag $(Build.BuildNumber)
       git push origin $(Build.BuildNumber)
-      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $BranchName
       git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $(Build.BuildNumber)
-    displayName: 'Git tag'
+    displayName: 'Push changes to GitHub'
