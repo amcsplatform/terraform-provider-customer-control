@@ -35,6 +35,8 @@ dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v0.0.0-202105152
 dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v0.0.0-20210515205957-a78fcfa2f338/go.mod h1:SJXXXfgdU8yrch/a2ZxbrDhJNBGfN5tvUy4auP2Oszk=
 dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v0.0.0-20210705071753-61665ccee05c h1:AeIuI0ApuJnNTIjqKNeWamFePwKH5YAUdb1Gg11CV24=
 dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v0.0.0-20210705071753-61665ccee05c/go.mod h1:SJXXXfgdU8yrch/a2ZxbrDhJNBGfN5tvUy4auP2Oszk=
+dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v1.0.0 h1:A9KPDgGjqNyMmQUWxcjOj7YGeBR0+ZPDvhaf+HwJiCg=
+dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git v1.0.0/go.mod h1:SJXXXfgdU8yrch/a2ZxbrDhJNBGfN5tvUy4auP2Oszk=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
