@@ -11,6 +11,9 @@ pool:
 
 variables:
   - group: amcsplatform_github
+  - group: customercontrol-dev
+  - group: amcsdevops
+
   - name: CUSTOMERCONTROL_URL
     value: 'https://customercontrol-dev.amcsgroup.io'
   - name: CUSTOMERCONTROL_PRIVATE_KEY
@@ -20,15 +23,11 @@ steps:
     clean: true
     persistCredentials: true
 
-  - task: AzureKeyVault@1
-    displayName: 'Get CustomerControl private key'
-    inputs:
-      azureSubscription: 'Development Subscription'
-      keyVaultName: 'customercontrol-dev-kv'
-      secretsFilter: 'credentials-api-private-key'
-      runAsPreJob: true
+  - script: git config --global url."https://devops:$(credentials-devops-pat)@dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo".insteadOf "https://dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo"
+    displayName: 'Git config'
 
   - task: GoTool@0
+    displayName: 'Use Go 1.16'
     inputs:
       version: '1.16'
 
@@ -40,6 +39,7 @@ steps:
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
   - script: make testacc
+    displayName: 'Run integration tests'
 
   - powershell: |
       $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
