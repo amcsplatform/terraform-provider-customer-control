@@ -10,6 +10,11 @@ If you're new to provider development, a good place to start is the [Extending T
 
 Set up your local environment by installing [Go](https://golang.org/). 
 
+### Updating documentation
+```shell
+go generate
+```
+
 ### Building
 ```shell
 make build

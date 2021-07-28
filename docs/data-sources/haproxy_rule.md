@@ -27,43 +27,43 @@ data "customercontrol_haproxy_rule" "example" {
 
 ### Optional
 
-- **domain_id** (Number) Domain ID registered in CustomerControl
 - **domain_name** (String) Domain name
 - **id** (String) The ID of this resource.
-- **setup_configuration** (Block Set) Rule configuration for simple-forward kind (see [below for nested schema](#nestedblock--setup_configuration))
-- **setup_configuration_multi_forward** (Block Set) Rule configuration for multi-forward kind (see [below for nested schema](#nestedblock--setup_configuration_multi_forward))
 - **setup_kind** (String) Rule kind
 
 ### Read-Only
 
+- **domain_id** (Number) Domain ID registered in CustomerControl
 - **manage_certificate** (Boolean) Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true
+- **setup_configuration** (Set of Object) Rule configuration for simple-forward kind (see [below for nested schema](#nestedatt--setup_configuration))
+- **setup_configuration_multi_forward** (Set of Object) Rule configuration for multi-forward kind (see [below for nested schema](#nestedatt--setup_configuration_multi_forward))
 - **valid_until** (String) SSL certificate validity if manage_certificate was set to true
 
-<a id="nestedblock--setup_configuration"></a>
+<a id="nestedatt--setup_configuration"></a>
 ### Nested Schema for `setup_configuration`
 
-Optional:
+Read-Only:
 
-- **backend** (String) Backend address or IP to redirect requests to
-- **backend_port** (Number) Backend port
-- **is_ssl** (Boolean) Enables SSL if true; terminates SSL if false
-- **set_host** (Boolean) Passes host name in the request header to target backends if true
+- **backend** (String)
+- **backend_port** (Number)
+- **is_ssl** (Boolean)
+- **set_host** (Boolean)
 
 
-<a id="nestedblock--setup_configuration_multi_forward"></a>
+<a id="nestedatt--setup_configuration_multi_forward"></a>
 ### Nested Schema for `setup_configuration_multi_forward`
 
-Optional:
+Read-Only:
 
-- **servers** (Block List) List of backends (see [below for nested schema](#nestedblock--setup_configuration_multi_forward--servers))
+- **servers** (List of Object) (see [below for nested schema](#nestedobjatt--setup_configuration_multi_forward--servers))
 
-<a id="nestedblock--setup_configuration_multi_forward--servers"></a>
+<a id="nestedobjatt--setup_configuration_multi_forward--servers"></a>
 ### Nested Schema for `setup_configuration_multi_forward.servers`
 
-Optional:
+Read-Only:
 
-- **is_ssl** (Boolean) Enables SSL if true; terminates SSL if false
-- **port** (Number) Backend port
-- **url** (String) Backend address or IP to redirect requests to
+- **is_ssl** (Boolean)
+- **port** (Number)
+- **url** (String)
 
 
