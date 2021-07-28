@@ -25,13 +25,13 @@ func Provider() func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			Schema: map[string]*schema.Schema{
-				"url": &schema.Schema{
+				"url": {
 					Type:        schema.TypeString,
 					Optional:    true,
 					DefaultFunc: schema.EnvDefaultFunc("CUSTOMERCONTROL_URL", "https://customercontrol-dev.amcsgroup.io"),
 					Description: "Url to CustomerControl API",
 				},
-				"private_key": &schema.Schema{
+				"private_key": {
 					Type:        schema.TypeString,
 					Required:    true,
 					Description: "CustomerControl private key for authentication",
@@ -51,7 +51,7 @@ func Provider() func() *schema.Provider {
 
 }
 
-func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	url := d.Get("url").(string)
 	privateKey := d.Get("private_key").(string)
 

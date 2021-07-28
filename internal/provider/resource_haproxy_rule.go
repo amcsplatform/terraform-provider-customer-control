@@ -1,8 +1,11 @@
 package provider
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 	"strconv"
 	"strings"
@@ -14,45 +17,46 @@ import (
 
 func resourceHAProxyRule() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages HAProxy rule",
-		Create:      resourceHAProxyRuleCreate,
-		Read:        resourceHAProxyRuleRead,
-		Delete:      resourceHAProxyRuleDelete,
+		Description:   "Manages HAProxy rule",
+		CreateContext: resourceHAProxyRuleCreate,
+		ReadContext:   resourceHAProxyRuleRead,
+		DeleteContext: resourceHAProxyRuleDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"domain_name": &schema.Schema{
+			"domain_name": {
 				Description: "Domain name to create the rule for",
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Required:    true,
 			},
-			"virtual_host_id": &schema.Schema{
+			"virtual_host_id": {
 				Description: "ID of VirtualHost created with the rule",
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Computed:    true,
 			},
-			"domain_id": &schema.Schema{
+			"domain_id": {
 				Description: "ID of Domain created with the rule",
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Computed:    true,
 			},
-			"setup_kind": &schema.Schema{
+			"setup_kind": {
 				Description: "Rule kind",
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				ValidateFunc: validateValueFunc([]string{
-					"simple-forward",
-					"multi-forward",
-				}),
+				ValidateDiagFunc: validateDiagFunc(validation.StringInSlice(
+					[]string{
+						"simple-forward",
+						"multi-forward",
+					}, false)),
 			},
-			"setup_configuration": &schema.Schema{
+			"setup_configuration": {
 				Description:  "Rule configuration for simple-forward kind",
-				Type:         schema.TypeList,
+				Type:         schema.TypeMap,
 				MaxItems:     1,
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
@@ -86,16 +90,16 @@ func resourceHAProxyRule() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"setup_configuration_multi_forward": &schema.Schema{
+			"setup_configuration_multi_forward": {
 				Description:  "Rule configuration for multi-forward kind",
-				Type:         schema.TypeList,
+				Type:         schema.TypeMap,
 				MaxItems:     1,
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"server": {
 							Description: "List of backends",
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{
@@ -126,13 +130,13 @@ func resourceHAProxyRule() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"valid_until": &schema.Schema{
+			"valid_until": {
 				Description: "SSL certificate validity if manage_certificate was set to true",
 				Type:        schema.TypeString,
 				Computed:    true,
 				ForceNew:    true,
 			},
-			"manage_certificate": &schema.Schema{
+			"manage_certificate": {
 				Description: "Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true",
 				Type:        schema.TypeBool,
 				ForceNew:    true,
@@ -143,21 +147,21 @@ func resourceHAProxyRule() *schema.Resource {
 	}
 }
 
-func resourceHAProxyRuleRead(d *schema.ResourceData, m interface{}) error {
+func resourceHAProxyRuleRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*cc.CustomerControlClient)
 
 	virtualHostId := d.Get("virtual_host_id").(int)
 	virtualHost, err := client.GetVirtualHostById(&virtualHostId)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	domainId := d.Get("domain_id").(int)
 	domain, err := client.GetDomainById(domainId)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.Itoa(domain.DomainNameId))
@@ -167,35 +171,44 @@ func resourceHAProxyRuleRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("setup_kind", virtualHost.SetupKind)
 
 	if virtualHost.SetupKind == "simple-forward" {
+		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfiguration)
 		setupConfigurationMap := map[string]interface{}{
-			"backend":      virtualHost.Configuration.Backend,
-			"backend_port": virtualHost.Configuration.BackendPort,
-			"is_ssl":       virtualHost.Configuration.IsSsl,
-			"set_host":     virtualHost.Configuration.SetHost,
+			"backend":      virtualHostConfiguration.Backend,
+			"backend_port": virtualHostConfiguration.BackendPort,
+			"is_ssl":       virtualHostConfiguration.IsSsl,
+			"set_host":     virtualHostConfiguration.SetHost,
 		}
 		d.Set("setup_configuration", setupConfigurationMap)
 	} else if virtualHost.SetupKind == "multi-forward" {
-		// TODO: implement
-		// setupConfigurationMap := map[string]interface{}{
-		// 	"servers": []map[string]interface{}{
+		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfigurationMultiBackends)
+		var servers []map[string]interface{}
 
-		// 	},
-		// }
-		// d.Set("setup_configuration_multi_forward", setupConfigurationMap)
+		for _, s := range virtualHostConfiguration.Servers {
+			var server = map[string]interface{}{
+				"url":    s.Url,
+				"port":   s.Port,
+				"is_ssl": s.IsSsl,
+			}
+
+			servers = append(servers, server)
+		}
+
+		setupConfigurationMap := servers
+		d.Set("setup_configuration_multi_forward", setupConfigurationMap)
 	}
 
-	return nil
+	return diag.Diagnostics{}
 }
 
-func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
+func resourceHAProxyRuleCreate(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*cc.CustomerControlClient)
 	domainName := d.Get("domain_name").(string)
-	// manageCertificate := d.Get("manage_certificate").(bool)
+	manageCertificate := d.Get("manage_certificate").(bool)
 
 	domains, err := client.GetDomains()
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Check if domain already exists
@@ -209,16 +222,16 @@ func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if matchingDomain != nil {
-		return fmt.Errorf("Domain %s already exists", domainName)
+		return diag.FromErr(fmt.Errorf("domain %s already exists", domainName))
 	}
 
 	// Create domain
 	log.Printf("[INFO] Creating new domain %s", domainName)
-	domainId, err := client.CreateDomain(domainName)
+	domainId, err := client.CreateDomain(domainName, manageCertificate)
 	log.Printf("[INFO] Created new domain %s", strconv.Itoa(domainId))
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Create virtual host
@@ -236,9 +249,20 @@ func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
 			SetHost:     setupConfigurationMap["set_host"].(bool),
 		}
 	} else if setupKind == "multi-forward" {
-		// TODO: implement
-		// setupKindType := cc.MultiForward
-		// setupConfigurationMap := d.Get("setup_configuration_multi_forward").(map[string]interface{})
+		setupKindType = cc.MultiForward
+		sc := d.Get("setup_configuration_multi_forward").([]interface{})
+		setupConfigurationMap := sc[0].(map[string]interface{})
+		var setupConfiguration cc.VirtualHostConfigurationMultiBackends
+
+		for _, s := range setupConfigurationMap["servers"].([]map[string]interface{}) {
+			var server = cc.VirtualHostConfigurationWithoutHost{
+				Url:   s["url"].(string),
+				Port:  s["port"].(int),
+				IsSsl: s["is_ssl"].(bool),
+			}
+
+			setupConfiguration.Servers = append(setupConfiguration.Servers, server)
+		}
 	}
 
 	configurationBytes, err := json.Marshal(setupConfiguration)
@@ -254,7 +278,7 @@ func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
 	log.Printf("[INFO] Created virtual host %s", strconv.Itoa(virtualHostId))
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Write configuration
@@ -262,7 +286,7 @@ func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
 	err = client.WriteConfiguration()
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(strconv.Itoa(virtualHostId))
@@ -271,31 +295,31 @@ func resourceHAProxyRuleCreate(d *schema.ResourceData, m interface{}) error {
 
 	log.Printf("[INFO] Finished creating HAProxy rule")
 
-	return resourceHAProxyRuleRead(d, m)
+	return diag.Diagnostics{}
 }
 
-func resourceHAProxyRuleDelete(d *schema.ResourceData, m interface{}) error {
+func resourceHAProxyRuleDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*cc.CustomerControlClient)
 
 	// Delete virtual host
 	virtualHostId := d.Get("virtual_host_id").(int)
 	_, err := client.DeleteVirtualHostById(&virtualHostId)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Delete doman
 	domainId := d.Get("domain_id").(int)
 	err = client.DeleteDomainById(domainId)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	// Write configuration after delete
 	err = client.WriteConfiguration()
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return nil
+	return diag.Diagnostics{}
 }

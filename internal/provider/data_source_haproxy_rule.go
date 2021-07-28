@@ -15,30 +15,30 @@ func dataSourceHAProxyRule() *schema.Resource {
 		Description: "Use this data resource to access information about an existing HAProxy rule",
 		ReadContext: dataSourceHAProxyRuleRead,
 		Schema: map[string]*schema.Schema{
-			"virtual_host_id": &schema.Schema{
+			"virtual_host_id": {
 				Description: "VirtualHost ID registered in CustomerControl",
 				Type:        schema.TypeInt,
 				Required:    true,
 			},
-			"domain_id": &schema.Schema{
+			"domain_id": {
 				Description: "Domain ID registered in CustomerControl",
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Computed:    true,
 			},
-			"domain_name": &schema.Schema{
+			"domain_name": {
 				Description: "Domain name",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 			},
-			"setup_kind": &schema.Schema{
+			"setup_kind": {
 				Description: "Rule kind",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 			},
-			"setup_configuration": &schema.Schema{
+			"setup_configuration": {
 				Description: "Rule configuration for simple-forward kind",
 				Type:        schema.TypeSet,
 				Elem: &schema.Resource{
@@ -72,7 +72,7 @@ func dataSourceHAProxyRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"setup_configuration_multi_forward": &schema.Schema{
+			"setup_configuration_multi_forward": {
 				Description: "Rule configuration for multi-forward kind",
 				Type:        schema.TypeSet,
 				Elem: &schema.Resource{
@@ -110,12 +110,12 @@ func dataSourceHAProxyRule() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"valid_until": &schema.Schema{
+			"valid_until": {
 				Description: "SSL certificate validity if manage_certificate was set to true",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"manage_certificate": &schema.Schema{
+			"manage_certificate": {
 				Description: "Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true",
 				Type:        schema.TypeBool,
 				Computed:    true,
@@ -124,9 +124,8 @@ func dataSourceHAProxyRule() *schema.Resource {
 	}
 }
 
-func dataSourceHAProxyRuleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataSourceHAProxyRuleRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	client := m.(*cc.CustomerControlClient)
-	var diags diag.Diagnostics
 
 	virtualHostId := d.Get("virtual_host_id").(int)
 	virtualHost, err := client.GetVirtualHostById(&virtualHostId)
@@ -149,22 +148,31 @@ func dataSourceHAProxyRuleRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("setup_kind", virtualHost.SetupKind)
 
 	if virtualHost.SetupKind == "simple-forward" {
+		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfiguration)
 		setupConfigurationMap := map[string]interface{}{
-			"backend":      virtualHost.Configuration.Backend,
-			"backend_port": virtualHost.Configuration.BackendPort,
-			"is_ssl":       virtualHost.Configuration.IsSsl,
-			"set_host":     virtualHost.Configuration.SetHost,
+			"backend":      virtualHostConfiguration.Backend,
+			"backend_port": virtualHostConfiguration.BackendPort,
+			"is_ssl":       virtualHostConfiguration.IsSsl,
+			"set_host":     virtualHostConfiguration.SetHost,
 		}
 		d.Set("setup_configuration", setupConfigurationMap)
 	} else if virtualHost.SetupKind == "multi-forward" {
-		// TODO: implement
-		// setupConfigurationMap := map[string]interface{}{
-		// 	"servers": []map[string]interface{}{
+		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfigurationMultiBackends)
+		var servers []map[string]interface{}
 
-		// 	},
-		// }
-		// d.Set("setup_configuration_multi_forward", setupConfigurationMap)
+		for _, s := range virtualHostConfiguration.Servers {
+			var server = map[string]interface{}{
+				"url":    s.Url,
+				"port":   s.Port,
+				"is_ssl": s.IsSsl,
+			}
+
+			servers = append(servers, server)
+		}
+
+		setupConfigurationMap := servers
+		d.Set("setup_configuration_multi_forward", setupConfigurationMap)
 	}
 
-	return diags
+	return diag.Diagnostics{}
 }

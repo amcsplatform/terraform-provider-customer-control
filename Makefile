@@ -1,9 +1,9 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=amcsgroup.com
+HOSTNAME=amcsplatform
 NAMESPACE=amcs
 NAME=customercontrol
 BINARY=terraform-provider-${NAME}.exe
-VERSION=0.0.14
+VERSION=0.0.15
 OS_ARCH=windows_amd64
 SIDELOAD_PATH=%APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
@@ -27,12 +27,12 @@ release:
 	GOOS=windows GOARCH=amd64 go build -o ./bin/${BINARY}_${VERSION}_windows_amd64
 
 install: build
-	if not exist ${SIDELOAD_PATH} mkdir -p ${SIDELOAD_PATH}
+	if not exist ${SIDELOAD_PATH} mkdir ${SIDELOAD_PATH}
 	move ${BINARY} %APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
-test: 
-	go test -i $(TEST) || exit 1                                                   
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4                    
+test:
+	go test -i $(TEST) || exit 1
+	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 
-testacc: 
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m   
+testacc:
+	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
