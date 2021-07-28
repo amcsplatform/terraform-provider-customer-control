@@ -103,7 +103,7 @@ func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId int) resource.T
 
 		domain, err := client.GetDomainById(domainId)
 		if err == nil && domain.DomainNameId > 0 {
-			return fmt.Errorf("domain still exists, id: %s", domain.DomainNameId)
+			return fmt.Errorf("domain still exists, id: %s", strconv.Itoa(domain.DomainNameId))
 		}
 
 		return nil
