@@ -142,6 +142,8 @@ func dataSourceHAProxyRuleRead(_ context.Context, d *schema.ResourceData, m inte
 	d.Set("domain_name", domain.DomainName)
 	d.Set("setup_kind", virtualHost.SetupKind)
 
+	setupConfiguration := make([]interface{}, 0)
+
 	if virtualHost.SetupKind == "simple-forward" {
 		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfiguration)
 		setupConfigurationMap := map[string]interface{}{
@@ -150,7 +152,8 @@ func dataSourceHAProxyRuleRead(_ context.Context, d *schema.ResourceData, m inte
 			"is_ssl":       virtualHostConfiguration.IsSsl,
 			"set_host":     virtualHostConfiguration.SetHost,
 		}
-		d.Set("setup_configuration", setupConfigurationMap)
+		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
+		d.Set("setup_configuration", setupConfiguration)
 	} else if virtualHost.SetupKind == "multi-forward" {
 		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfigurationMultiBackends)
 		var servers []map[string]interface{}
@@ -166,7 +169,8 @@ func dataSourceHAProxyRuleRead(_ context.Context, d *schema.ResourceData, m inte
 		}
 
 		setupConfigurationMap := servers
-		d.Set("setup_configuration_multi_forward", setupConfigurationMap)
+		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
+		d.Set("setup_configuration_multi_forward", setupConfiguration)
 	}
 
 	return diag.Diagnostics{}
