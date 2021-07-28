@@ -28,13 +28,11 @@ func dataSourceHAProxyRule() *schema.Resource {
 			"domain_name": {
 				Description: "Domain name",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 			"setup_kind": {
 				Description: "Rule kind",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 			"setup_configuration": {

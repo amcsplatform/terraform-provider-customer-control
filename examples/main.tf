@@ -1,15 +1,15 @@
 terraform {
   required_providers {
     customercontrol = {
-      version = "0.0.15"
-      source  = "amcsplatform/amcs/customercontrol"
+      version = "0.1.18"
+      source  = "amcsplatform/customercontrol"
     }
   }
 }
 
 provider "customercontrol" {
-  url         = "https://customercontrol-dev.amcsgroup.io"
-  private_key = "qkAAJIttxmtWPXOyHKn6hedvtJSw296K"
+  url         = ""
+  private_key = ""
 }
 
 resource "customercontrol_haproxy_rule" "simple-forward" {

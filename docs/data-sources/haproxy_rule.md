@@ -27,16 +27,16 @@ data "customercontrol_haproxy_rule" "example" {
 
 ### Optional
 
-- **domain_name** (String) Domain name
 - **id** (String) The ID of this resource.
-- **setup_kind** (String) Rule kind
 
 ### Read-Only
 
 - **domain_id** (Number) Domain ID registered in CustomerControl
+- **domain_name** (String) Domain name
 - **manage_certificate** (Boolean) Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true
 - **setup_configuration** (Set of Object) Rule configuration for simple-forward kind (see [below for nested schema](#nestedatt--setup_configuration))
 - **setup_configuration_multi_forward** (Set of Object) Rule configuration for multi-forward kind (see [below for nested schema](#nestedatt--setup_configuration_multi_forward))
+- **setup_kind** (String) Rule kind
 - **valid_until** (String) SSL certificate validity if manage_certificate was set to true
 
 <a id="nestedatt--setup_configuration"></a>
