@@ -33,6 +33,14 @@ steps:
       arguments: '-d'
       workingDirectory: '$(System.DefaultWorkingDirectory)'
 
+  - task: TerraformInstaller@0
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: '0.13.7'
+
+  - script: make install
+    displayName: 'Build & side-load provider'
+
   - script: make testacc
     displayName: 'Run integration tests'
     env:
