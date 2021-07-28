@@ -13,11 +13,6 @@ variables:
   - group: amcsplatform_github
   - group: customercontrol-dev
   - group: amcsdevops
-
-  - name: CUSTOMERCONTROL_URL
-    value: 'https://customercontrol-dev.amcsgroup.io'
-  - name: CUSTOMERCONTROL_PRIVATE_KEY
-    value: $(credentials-api-private-key)
 steps:
   - checkout: self
     clean: true
@@ -40,6 +35,9 @@ steps:
 
   - script: make testacc
     displayName: 'Run integration tests'
+    env:
+      CUSTOMERCONTROL_URL: 'https://customercontrol-dev.amcsgroup.io'
+      CUSTOMERCONTROL_PRIVATE_KEY: $(credentials-api-private-key)
 
   - powershell: |
       $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
