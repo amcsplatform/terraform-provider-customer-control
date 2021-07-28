@@ -95,7 +95,7 @@ func resourceHAProxyRule() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"server": {
 							Description: "List of backends",
-							Type:        schema.TypeSet,
+							Type:        schema.TypeList,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{
@@ -236,8 +236,8 @@ func resourceHAProxyRuleCreate(_ context.Context, d *schema.ResourceData, m inte
 	var setupConfiguration interface{}
 
 	if setupKind == "simple-forward" {
-		sc := d.Get("setup_configuration").([]interface{})
-		setupConfigurationMap := sc[0].(map[string]interface{})
+		sc := d.Get("setup_configuration").(interface{})
+		setupConfigurationMap := sc.(map[string]interface{})
 		setupConfiguration = cc.VirtualHostConfiguration{
 			Backend:     setupConfigurationMap["backend"].(string),
 			BackendPort: setupConfigurationMap["backend_port"].(int),
@@ -246,8 +246,8 @@ func resourceHAProxyRuleCreate(_ context.Context, d *schema.ResourceData, m inte
 		}
 	} else if setupKind == "multi-forward" {
 		setupKindType = cc.MultiForward
-		sc := d.Get("setup_configuration_multi_forward").([]interface{})
-		setupConfigurationMap := sc[0].(map[string]interface{})
+		sc := d.Get("setup_configuration_multi_forward").(interface{})
+		setupConfigurationMap := sc.(map[string]interface{})
 		var setupConfiguration cc.VirtualHostConfigurationMultiBackends
 
 		for _, s := range setupConfigurationMap["servers"].([]map[string]interface{}) {

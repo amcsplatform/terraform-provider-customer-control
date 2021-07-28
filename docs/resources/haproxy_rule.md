@@ -63,7 +63,7 @@ Optional:
 
 Optional:
 
-- **server** (Block Set) List of backends (see [below for nested schema](#nestedblock--setup_configuration_multi_forward--server))
+- **server** (Block List) List of backends (see [below for nested schema](#nestedblock--setup_configuration_multi_forward--server))
 
 <a id="nestedblock--setup_configuration_multi_forward--server"></a>
 ### Nested Schema for `setup_configuration_multi_forward.server`
