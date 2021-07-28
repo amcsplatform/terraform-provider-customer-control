@@ -1,4 +1,3 @@
-TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=amcsplatform
 NAMESPACE=amcs
 NAME=customercontrol
@@ -30,9 +29,5 @@ install: build
 	if not exist ${SIDELOAD_PATH} mkdir ${SIDELOAD_PATH}
 	move ${BINARY} %APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
-test:
-	go test -i $(TEST) || exit 1
-	echo $(TEST) | xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
-
 testacc:
-	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 2m
+	TF_ACC=1 go test ./...-v $(TESTARGS) -timeout 120m
