@@ -39,10 +39,10 @@ func Provider(version string) func() *schema.Provider {
 				},
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"customercontrol_haproxy_rule": resourceHAProxyRule(),
+				"customercontrol_haproxy_rule": ResourceHAProxyRule(),
 			},
 			DataSourcesMap: map[string]*schema.Resource{
-				"customercontrol_haproxy_rule": dataSourceHAProxyRule(),
+				"customercontrol_haproxy_rule": DataSourceHAProxyRule(),
 			},
 		}
 

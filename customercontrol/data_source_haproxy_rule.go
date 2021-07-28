@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceHAProxyRule() *schema.Resource {
+func DataSourceHAProxyRule() *schema.Resource {
 	return &schema.Resource{
 		Description: "Use this data resource to access information about an existing HAProxy rule",
 		ReadContext: dataSourceHAProxyRuleRead,
