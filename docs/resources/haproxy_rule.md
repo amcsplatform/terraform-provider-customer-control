@@ -38,13 +38,40 @@ resource "customercontrol_haproxy_rule" "example" {
 
 - **id** (String) The ID of this resource.
 - **manage_certificate** (Boolean) Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true Defaults to `false`.
-- **setup_configuration** (Map of String) Rule configuration for simple-forward kind
-- **setup_configuration_multi_forward** (Map of String) Rule configuration for multi-forward kind
+- **setup_configuration** (Block Set) Rule configuration for simple-forward kind (see [below for nested schema](#nestedblock--setup_configuration))
+- **setup_configuration_multi_forward** (Block Set) Rule configuration for multi-forward kind (see [below for nested schema](#nestedblock--setup_configuration_multi_forward))
 
 ### Read-Only
 
 - **domain_id** (Number) ID of Domain created with the rule
 - **valid_until** (String) SSL certificate validity if manage_certificate was set to true
 - **virtual_host_id** (Number) ID of VirtualHost created with the rule
+
+<a id="nestedblock--setup_configuration"></a>
+### Nested Schema for `setup_configuration`
+
+Optional:
+
+- **backend** (String) Backend address or IP to redirect requests to
+- **backend_port** (Number) Backend port
+- **is_ssl** (Boolean) Enables SSL if true; terminates SSL if false
+- **set_host** (Boolean) Passes host name in the request header to target backends if true
+
+
+<a id="nestedblock--setup_configuration_multi_forward"></a>
+### Nested Schema for `setup_configuration_multi_forward`
+
+Optional:
+
+- **server** (Block Set) List of backends (see [below for nested schema](#nestedblock--setup_configuration_multi_forward--server))
+
+<a id="nestedblock--setup_configuration_multi_forward--server"></a>
+### Nested Schema for `setup_configuration_multi_forward.server`
+
+Optional:
+
+- **is_ssl** (Boolean) Enables SSL if true; terminates SSL if false
+- **port** (Number) Backend port
+- **url** (String) Backend address or IP to redirect requests to
 
 

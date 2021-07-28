@@ -54,7 +54,7 @@ func resourceHAProxyRule() *schema.Resource {
 			},
 			"setup_configuration": {
 				Description:  "Rule configuration for simple-forward kind",
-				Type:         schema.TypeMap,
+				Type:         schema.TypeSet,
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -89,7 +89,7 @@ func resourceHAProxyRule() *schema.Resource {
 			},
 			"setup_configuration_multi_forward": {
 				Description:  "Rule configuration for multi-forward kind",
-				Type:         schema.TypeMap,
+				Type:         schema.TypeSet,
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
