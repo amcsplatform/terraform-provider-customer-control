@@ -25,7 +25,7 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Config: testAccExample(t, "resources/customercontrol_haproxy_rule/_acc_simple_forward.tf"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].setup_kind", "simple-forward"),
 				),
 			},
 			{
@@ -34,9 +34,9 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_name", "terraform-provider-test.amcsgroup.io"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.setup_kind", "simple-forward"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.backend_port", "80"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.is_ssl", "false"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].backend_port", "80"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].is_ssl", "false"),
 				),
 			},
 			{
@@ -103,7 +103,7 @@ func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId int) resource.T
 
 		domain, err := client.GetDomainById(domainId)
 		if err == nil && domain.DomainNameId > 0 {
-			return fmt.Errorf("domain still exists")
+			return fmt.Errorf("domain still exists, id: %s", domain.DomainNameId)
 		}
 
 		return nil
