@@ -34,13 +34,11 @@ func resourceHAProxyRule() *schema.Resource {
 			"virtual_host_id": {
 				Description: "ID of VirtualHost created with the rule",
 				Type:        schema.TypeInt,
-				Optional:    true,
 				Computed:    true,
 			},
 			"domain_id": {
 				Description: "ID of Domain created with the rule",
 				Type:        schema.TypeInt,
-				Optional:    true,
 				Computed:    true,
 			},
 			"setup_kind": {

@@ -23,7 +23,6 @@ func dataSourceHAProxyRule() *schema.Resource {
 			"domain_id": {
 				Description: "Domain ID registered in CustomerControl",
 				Type:        schema.TypeInt,
-				Optional:    true,
 				Computed:    true,
 			},
 			"domain_name": {
@@ -69,7 +68,6 @@ func dataSourceHAProxyRule() *schema.Resource {
 						},
 					},
 				},
-				Optional: true,
 				Computed: true,
 			},
 			"setup_configuration_multi_forward": {
@@ -107,7 +105,6 @@ func dataSourceHAProxyRule() *schema.Resource {
 						},
 					},
 				},
-				Optional: true,
 				Computed: true,
 			},
 			"valid_until": {
