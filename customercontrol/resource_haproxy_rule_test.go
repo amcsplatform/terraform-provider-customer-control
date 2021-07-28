@@ -1,6 +1,7 @@
 package customercontrol
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"strconv"
@@ -63,6 +64,8 @@ func testAccHAProxyRuleCheckExists(rn string, domainId *int, virtualHostId *int)
 
 		domainIdAttr, _ := strconv.Atoi(rs.Primary.Attributes["domain_id"])
 		if domainIdAttr >= 0 {
+			a, _ := json.Marshal(rs.Primary.Attributes)
+			fmt.Println(string(a))
 			return fmt.Errorf("domainId is not set")
 		}
 
@@ -96,9 +99,9 @@ func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId int) resource.T
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*cc.CustomerControlClient)
 
-		_, err := client.GetVirtualHostById(virtualHostId)
+		virtualHost, err := client.GetVirtualHostById(virtualHostId)
 		if err == nil {
-			return fmt.Errorf("virtual host still exists")
+			return fmt.Errorf("virtual host still exists, id: %s", strconv.Itoa(virtualHost.VirtualHostId))
 		}
 
 		_, err = client.GetDomainById(domainId)

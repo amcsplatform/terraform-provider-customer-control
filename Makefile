@@ -30,4 +30,4 @@ install: build
 	move ${BINARY} %APPDATA%\terraform.d\plugins\${HOSTNAME}\${NAMESPACE}\${NAME}\${VERSION}\${OS_ARCH}
 
 testacc:
-	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 TF_LOG=INFO go test ./... -v $(TESTARGS) -timeout 120m
