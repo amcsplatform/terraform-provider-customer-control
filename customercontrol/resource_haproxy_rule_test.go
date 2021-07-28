@@ -19,14 +19,14 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccHAProxyRuleCheckDestroy(&virtualHostId, domainId),
+		CheckDestroy:      testAccHAProxyRuleCheckDestroy(&virtualHostId, &domainId),
 		Steps: []resource.TestStep{
 			{
 				// Test resource creation
 				Config: testAccExample(t, "resources/customercontrol_haproxy_rule/_acc_simple_forward.tf"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.setup_kind", "simple-forward"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_id", strconv.Itoa(domainId)),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "virtual_host_id", strconv.Itoa(virtualHostId)),
 				),
@@ -37,9 +37,9 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_name", "terraform-provider-test.amcsgroup.io"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].setup_kind", "simple-forward"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].backend_port", "80"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].is_ssl", "false"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.backend_port", "80"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.is_ssl", "false"),
 				),
 			},
 			{
@@ -98,7 +98,7 @@ func testAccHAProxyRuleCheckExists(rn string, domainId *int, virtualHostId *int)
 	}
 }
 
-func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId int) resource.TestCheckFunc {
+func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId *int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*cc.CustomerControlClient)
 
@@ -107,7 +107,7 @@ func testAccHAProxyRuleCheckDestroy(virtualHostId *int, domainId int) resource.T
 			return fmt.Errorf("virtual host still exists, id: %s", strconv.Itoa(virtualHost.VirtualHostId))
 		}
 
-		domain, err := client.GetDomainById(domainId)
+		domain, err := client.GetDomainById(*domainId)
 		if err == nil && domain.DomainNameId > 0 {
 			return fmt.Errorf("domain still exists, id: %s", strconv.Itoa(domain.DomainNameId))
 		}
