@@ -1,6 +1,7 @@
 package customercontrol
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"strconv"
@@ -26,6 +27,8 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration[0].setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_id", strconv.Itoa(domainId)),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "virtual_host_id", strconv.Itoa(virtualHostId)),
 				),
 			},
 			{
@@ -52,6 +55,9 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 func testAccHAProxyRuleCheckExists(rn string, domainId *int, virtualHostId *int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
+
+		r, _ := json.Marshal(rs.Primary.Attributes)
+		fmt.Println(string(r))
 
 		if !ok {
 			return fmt.Errorf("resource not found: %s", rn)
