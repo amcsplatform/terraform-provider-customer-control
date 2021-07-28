@@ -236,8 +236,7 @@ func resourceHAProxyRuleCreate(_ context.Context, d *schema.ResourceData, m inte
 	var setupConfiguration interface{}
 
 	if setupKind == "simple-forward" {
-		sc := d.Get("setup_configuration").(interface{})
-		setupConfigurationMap := sc.(map[string]interface{})
+		setupConfigurationMap := d.Get("setup_configuration").(map[string]interface{})
 		setupConfiguration = cc.VirtualHostConfiguration{
 			Backend:     setupConfigurationMap["backend"].(string),
 			BackendPort: setupConfigurationMap["backend_port"].(int),
@@ -246,8 +245,7 @@ func resourceHAProxyRuleCreate(_ context.Context, d *schema.ResourceData, m inte
 		}
 	} else if setupKind == "multi-forward" {
 		setupKindType = cc.MultiForward
-		sc := d.Get("setup_configuration_multi_forward").(interface{})
-		setupConfigurationMap := sc.(map[string]interface{})
+		setupConfigurationMap := d.Get("setup_configuration_multi_forward").(map[string]interface{})
 		var setupConfiguration cc.VirtualHostConfigurationMultiBackends
 
 		for _, s := range setupConfigurationMap["servers"].([]map[string]interface{}) {
