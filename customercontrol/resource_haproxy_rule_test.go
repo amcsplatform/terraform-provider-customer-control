@@ -26,7 +26,7 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Config: testAccExample(t, "resources/customercontrol_haproxy_rule/_acc_simple_forward.tf"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_kind", "simple-forward"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_id", strconv.Itoa(domainId)),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "virtual_host_id", strconv.Itoa(virtualHostId)),
 				),
@@ -37,7 +37,7 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.simple-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "domain_name", "terraform-provider-test.amcsgroup.io"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.setup_kind", "simple-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_kind", "simple-forward"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.backend_port", "80"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.is_ssl", "false"),
 				),
