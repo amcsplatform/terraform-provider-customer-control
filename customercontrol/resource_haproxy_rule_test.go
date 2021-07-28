@@ -69,7 +69,7 @@ func testAccHAProxyRuleCheckExists(rn string, domainId *int, virtualHostId *int)
 		*domainId = domainIdAttr
 
 		virtualHostIdAttr, _ := strconv.Atoi(rs.Primary.Attributes["virtual_host_id"])
-		if virtualHostIdAttr >= 0 {
+		if virtualHostIdAttr <= 0 {
 			return fmt.Errorf("virtualHostId is not set")
 		}
 
