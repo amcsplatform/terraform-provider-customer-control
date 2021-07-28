@@ -40,12 +40,6 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.simple-forward", "setup_configuration.0.is_ssl", "false"),
 				),
 			},
-			{
-				// Importing matches the state of the previous step.
-				ResourceName:      "customercontrol_haproxy_rule.simple-forward",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }
