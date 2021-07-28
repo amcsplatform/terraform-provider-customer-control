@@ -38,8 +38,8 @@ resource "customercontrol_haproxy_rule" "example" {
 
 - **id** (String) The ID of this resource.
 - **manage_certificate** (Boolean) Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true Defaults to `false`.
-- **setup_configuration** (Block Set) Rule configuration for simple-forward kind (see [below for nested schema](#nestedblock--setup_configuration))
-- **setup_configuration_multi_forward** (Block Set) Rule configuration for multi-forward kind (see [below for nested schema](#nestedblock--setup_configuration_multi_forward))
+- **setup_configuration** (Block Set, Max: 1) Rule configuration for simple-forward kind (see [below for nested schema](#nestedblock--setup_configuration))
+- **setup_configuration_multi_forward** (Block Set, Max: 1) Rule configuration for multi-forward kind (see [below for nested schema](#nestedblock--setup_configuration_multi_forward))
 
 ### Read-Only
 
