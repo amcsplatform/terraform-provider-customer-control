@@ -38,9 +38,6 @@ steps:
     inputs:
       terraformVersion: '0.13.7'
 
-  - script: make install
-    displayName: 'Build & side-load provider'
-
   - script: make testacc
     displayName: 'Run integration tests'
     env:
