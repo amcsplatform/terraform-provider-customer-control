@@ -11,10 +11,35 @@ pool:
 
 variables:
   - group: amcsplatform_github
+  - name: CUSTOMERCONTROL_URL
+    value: 'https://customercontrol-dev.amcsgroup.io'
+  - name: CUSTOMERCONTROL_PRIVATE_KEY
+    value: $(credentials-api-private-key)
 steps:
   - checkout: self
     clean: true
     persistCredentials: true
+
+  - task: AzureKeyVault@1
+    displayName: 'Get CustomerControl private key'
+    inputs:
+      azureSubscription: 'Development Subscription'
+      keyVaultName: 'customercontrol-dev-kv'
+      secretsFilter: 'credentials-api-private-key'
+      runAsPreJob: true
+
+  - task: GoTool@0
+    inputs:
+      version: '1.16'
+
+  - task: Go@0
+    displayName: 'Go get'
+    inputs:
+      command: 'get'
+      arguments: '-d'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - script: make testacc
 
   - powershell: |
       $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""

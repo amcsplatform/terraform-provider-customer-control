@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
-	"github.com/amcsplatform/terraform-provider-customercontrol/internal/provider"
+	"github.com/amcsplatform/terraform-provider-customercontrol/customercontrol"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 )
@@ -34,7 +34,7 @@ func main() {
 	flag.BoolVar(&debugMode, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	opts := &plugin.ServeOpts{ProviderFunc: provider.Provider()}
+	opts := &plugin.ServeOpts{ProviderFunc: customercontrol.Provider(version)}
 
 	if debugMode {
 		err := plugin.Debug(context.Background(), "registry.terraform.io/amcsplatform/customercontrol", opts)
