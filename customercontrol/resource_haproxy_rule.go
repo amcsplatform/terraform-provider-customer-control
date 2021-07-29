@@ -97,7 +97,7 @@ func ResourceHAProxyRule() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"servers": {
 							Description: "List of backends",
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{
@@ -298,7 +298,7 @@ func DeleteHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{})
 		return diag.FromErr(err)
 	}
 
-	// Delete doman
+	// Delete domain
 	domainId := d.Get("domain_id").(int)
 	err = client.DeleteDomainById(domainId)
 	if err != nil {
@@ -343,25 +343,20 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 		return nil
 	}
 
-	j, _ := json.Marshal(c)
-	fmt.Println(string(j))
-
 	setupConfiguration := cc.VirtualHostConfigurationMultiBackends{}
 
 	for _, configuration := range c.(*schema.Set).List() {
 		c := configuration.(map[string]interface{})
 
-		j, _ = json.Marshal(c["servers"])
-		fmt.Println(string(j))
-
-		for _, s := range c["servers"].([]map[string]interface{}) {
-			var server = cc.VirtualHostConfigurationWithoutHost{
-				Url:   s["url"].(string),
-				Port:  s["port"].(int),
-				IsSsl: s["is_ssl"].(bool),
+		for _, s := range c["servers"].(*schema.Set).List() {
+			server := s.(map[string]interface{})
+			var virtualHostConfig = cc.VirtualHostConfigurationWithoutHost{
+				Url:   server["url"].(string),
+				Port:  server["port"].(int),
+				IsSsl: server["is_ssl"].(bool),
 			}
 
-			setupConfiguration.Servers = append(setupConfiguration.Servers, server)
+			setupConfiguration.Servers = append(setupConfiguration.Servers, virtualHostConfig)
 		}
 	}
 
