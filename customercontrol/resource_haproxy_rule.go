@@ -95,9 +95,9 @@ func ResourceHAProxyRule() *schema.Resource {
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"server": {
+						"servers": {
 							Description: "List of backends",
-							Type:        schema.TypeSet,
+							Type:        schema.TypeList,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{
@@ -184,7 +184,7 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 		d.Set("setup_configuration", setupConfiguration)
 	} else if virtualHost.SetupKind == "multi-forward" {
 		var virtualHostConfiguration = (virtualHost.Configuration).(cc.VirtualHostConfigurationMultiBackends)
-		var servers []map[string]interface{}
+		servers := make([]interface{}, 0)
 
 		for _, s := range virtualHostConfiguration.Servers {
 			var server = map[string]interface{}{
@@ -196,9 +196,14 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 			servers = append(servers, server)
 		}
 
-		setupConfigurationMap := servers
-		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
-		d.Set("setup_configuration_multi_forward", setupConfiguration)
+		setupConfigurationMap := map[string]interface{}{
+			"servers": servers,
+		}
+
+		err = d.Set("setup_configuration_multi_forward", setupConfigurationMap)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return diag.Diagnostics{}
@@ -343,15 +348,14 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 	for _, configuration := range c.(*schema.Set).List() {
 		c := configuration.(map[string]interface{})
 
-		for _, s := range c["server"].(*schema.Set).List() {
-			server := s.(map[string]interface{})
-			var virtualHostConfiguration = cc.VirtualHostConfigurationWithoutHost{
-				Url:   server["url"].(string),
-				Port:  server["port"].(int),
-				IsSsl: server["is_ssl"].(bool),
+		for _, s := range c["servers"].([]map[string]interface{}) {
+			var server = cc.VirtualHostConfigurationWithoutHost{
+				Url:   s["url"].(string),
+				Port:  s["port"].(int),
+				IsSsl: s["is_ssl"].(bool),
 			}
 
-			setupConfiguration.Servers = append(setupConfiguration.Servers, virtualHostConfiguration)
+			setupConfiguration.Servers = append(setupConfiguration.Servers, server)
 		}
 	}
 

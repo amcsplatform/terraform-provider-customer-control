@@ -3,12 +3,12 @@ resource "customercontrol_haproxy_rule" "multi-forward" {
   setup_kind  = "multi-forward"
 
   setup_configuration_multi_forward {
-    server {
+    servers {
       url    = "grafana-dev.amcsgroup.io"
       is_ssl = true
       port   = 443
     }
-    server {
+    servers {
       url    = "grafana.amcsgroup.io"
       is_ssl = true
       port   = 443
