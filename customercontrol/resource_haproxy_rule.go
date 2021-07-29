@@ -199,8 +199,8 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 		setupConfigurationMap := map[string]interface{}{
 			"servers": servers,
 		}
-
-		err = d.Set("setup_configuration_multi_forward", setupConfigurationMap)
+		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
+		err = d.Set("setup_configuration_multi_forward", setupConfiguration)
 		if err != nil {
 			return diag.FromErr(err)
 		}
