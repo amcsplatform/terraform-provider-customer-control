@@ -343,13 +343,16 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 		return nil
 	}
 
-	json, _ := json.Marshal(c)
-	fmt.Println(string(json))
+	j, _ := json.Marshal(c)
+	fmt.Println(string(j))
 
 	setupConfiguration := cc.VirtualHostConfigurationMultiBackends{}
 
 	for _, configuration := range c.(*schema.Set).List() {
 		c := configuration.(map[string]interface{})
+
+		j, _ = json.Marshal(c["servers"])
+		fmt.Println(string(j))
 
 		for _, s := range c["servers"].([]map[string]interface{}) {
 			var server = cc.VirtualHostConfigurationWithoutHost{
