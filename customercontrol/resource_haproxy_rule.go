@@ -97,7 +97,7 @@ func ResourceHAProxyRule() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"server": {
 							Description: "List of backends",
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{
@@ -343,14 +343,15 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 	for _, configuration := range c.(*schema.Set).List() {
 		c := configuration.(map[string]interface{})
 
-		for _, s := range c["servers"].([]map[string]interface{}) {
-			var server = cc.VirtualHostConfigurationWithoutHost{
-				Url:   s["url"].(string),
-				Port:  s["port"].(int),
-				IsSsl: s["is_ssl"].(bool),
+		for _, s := range c["server"].(*schema.Set).List() {
+			server := s.(map[string]interface{})
+			var virtualHostConfiguration = cc.VirtualHostConfigurationWithoutHost{
+				Url:   server["url"].(string),
+				Port:  server["port"].(int),
+				IsSsl: server["is_ssl"].(bool),
 			}
 
-			setupConfiguration.Servers = append(setupConfiguration.Servers, server)
+			setupConfiguration.Servers = append(setupConfiguration.Servers, virtualHostConfiguration)
 		}
 	}
 

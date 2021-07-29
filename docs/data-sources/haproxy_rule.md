@@ -55,10 +55,10 @@ Read-Only:
 
 Read-Only:
 
-- **servers** (List of Object) (see [below for nested schema](#nestedobjatt--setup_configuration_multi_forward--servers))
+- **server** (Set of Object) (see [below for nested schema](#nestedobjatt--setup_configuration_multi_forward--server))
 
-<a id="nestedobjatt--setup_configuration_multi_forward--servers"></a>
-### Nested Schema for `setup_configuration_multi_forward.servers`
+<a id="nestedobjatt--setup_configuration_multi_forward--server"></a>
+### Nested Schema for `setup_configuration_multi_forward.server`
 
 Read-Only:
 

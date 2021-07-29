@@ -73,9 +73,9 @@ func DataSourceHAProxyRule() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"servers": {
+						"server": {
 							Description: "List of backends",
-							Type:        schema.TypeList,
+							Type:        schema.TypeSet,
 							Optional:    true,
 							Computed:    true,
 							Elem: &schema.Resource{

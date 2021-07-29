@@ -44,6 +44,40 @@ func TestAccHAProxy_SimpleForward(t *testing.T) {
 	})
 }
 
+func TestAccHAProxy_MultiForward(t *testing.T) {
+	var domainId int
+	var virtualHostId int
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccHAProxyRuleCheckDestroy(&virtualHostId, &domainId),
+		Steps: []resource.TestStep{
+			{
+				// Test resource creation
+				Config: testAccExample(t, "resources/customercontrol_haproxy_rule/_acc_multi_forward.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.multi-forward", &domainId, &virtualHostId),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_kind", "multi-forward"),
+				),
+			},
+			{
+				// Update domain name, port and SSL
+				Config: testAccExample(t, "resources/customercontrol_haproxy_rule/_acc_multi_forward_update_domain.tf"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.multi-forward", &domainId, &virtualHostId),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "domain_name", "terraform-provider-test-2.amcsgroup.io"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_kind", "multi-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.port", "443"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.1.port", "443"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.is_ssl", "true"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.1.is_ssl", "true"),
+				),
+			},
+		},
+	})
+}
+
 func testAccHAProxyRuleCheckExists(rn string, domainId *int, virtualHostId *int) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[rn]
