@@ -32,6 +32,7 @@ steps:
 
   - script: go generate
     displayName: 'Generate docs'
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   - powershell: |
       $changes = git status --porcelain docs
