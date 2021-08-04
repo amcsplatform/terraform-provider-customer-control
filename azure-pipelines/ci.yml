@@ -24,8 +24,7 @@ steps:
 
   - powershell: |
       $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
-      $SemVer = "$(Build.BuildNumber)".Substring(0, "$(Build.BuildNumber)".IndexOf("-"))
-      $GitTag = "v$($SemVer)"
+      $GitTag = "v$(Build.BuildNumber)"
       git tag $GitTag
       git push origin $GitTag
       git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git HEAD:$BranchName
