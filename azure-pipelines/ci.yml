@@ -4,7 +4,8 @@ parameters:
     type: boolean
     default: false
 
-name: 1.0$(Rev:.r)
+# Version is controlled in templates/variables.yml
+name: $(majorMinorVersion).$(patchVersion)
 
 trigger:
   batch: true
@@ -23,9 +24,11 @@ steps:
 
   - powershell: |
       $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
-      git tag v$(Build.BuildNumber)
-      git push origin v$(Build.BuildNumber)
+      $SemVer = "$(Build.BuildNumber)".Substring(0, "$(Build.BuildNumber)".IndexOf("-"))
+      $GitTag = "v$($SemVer)"
+      git tag $GitTag
+      git push origin $GitTag
       git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git HEAD:$BranchName
-      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git v$(Build.BuildNumber)
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git $GitTag
     displayName: 'Push changes to GitHub'
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(${{ parameters.pushToGitHub }}, true)))

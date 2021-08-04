@@ -1,6 +1,9 @@
 # Terraform Provider CustomerControl
+[![Build Status](https://dev.azure.com/amcsgroup/DevOps/_apis/build/status/Terraform%20providers/terraform_provider_customercontrol_ci?branchName=master)](https://dev.azure.com/amcsgroup/DevOps/_build/latest?definitionId=764&branchName=master)
+[![release](https://github.com/amcsplatform/terraform-provider-customercontrol/actions/workflows/release.yml/badge.svg)](https://github.com/amcsplatform/terraform-provider-customercontrol/actions/workflows/release.yml)
 
 - Provider documentation: [https://registry.terraform.io/providers/amcsplatform/customercontrol/latest/docs](https://registry.terraform.io/providers/amcsplatform/customercontrol/latest/docs)
+- GitHub repository with releases: [https://github.com/amcsplatform/terraform-provider-customercontrol](https://github.com/amcsplatform/terraform-provider-customercontrol)
 
 ## Requirements 
 - Terraform 0.12+
@@ -11,11 +14,8 @@ If you're new to provider development, a good place to start is the [Extending T
 Set up your local environment by installing [Go](https://golang.org/). 
 
 ### Updating documentation
-```shell
-go generate
-```
-
-If the schema is changed, but documentation is not updated, then the pipeline will detect that and fail.
+Azure DevOps PR pipeline will generate and commit updated documentation automatically.
+For local testing, the documentation can be generated with `go generate` command.
 
 ### Building
 ```shell

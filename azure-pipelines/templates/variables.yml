@@ -2,3 +2,12 @@ variables:
   - group: amcsplatform_github
   - group: customercontrol-dev
   - group: amcsdevops
+
+  - name: majorMinorVersion
+    ${{ if ne(variables['Build.SourceBranchName'], 'master' ) }}:
+      value: 0.0
+    ${{ if eq(variables['Build.SourceBranchName'], 'master' ) }}:
+      value: 1.0
+
+  - name: patchVersion
+    value: $[counter(variables['majorMinorVersion'], 0)]
