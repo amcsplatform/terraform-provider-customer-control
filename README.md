@@ -1,20 +1,53 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Terraform Provider CustomerControl
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+- Provider documentation: [https://registry.terraform.io/providers/amcsplatform/customercontrol/latest/docs](https://registry.terraform.io/providers/amcsplatform/customercontrol/latest/docs)
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Requirements 
+- Terraform 0.12+
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## Development
+If you're new to provider development, a good place to start is the [Extending Terraform](https://www.terraform.io/docs/extend/index.html) docs.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Set up your local environment by installing [Go](https://golang.org/). 
+
+### Updating documentation
+```shell
+go generate
+```
+
+If the schema is changed, but documentation is not updated, then the pipeline will detect that and fail.
+
+### Building
+```shell
+make build
+```
+
+### Running acceptance tests
+```shell
+make testacc
+```
+
+Tests are defined in `*_test.go` files. They depend on DNS records registered in Azure DNS.
+There are currently 2 records required for the tests:
+- `terraform-provider-test.amcsgroup.io`, points to `proxy-dev.amcsgroup.io`
+- `terraform-provider-test-2.amcsgroup.io`, points to `proxy-dev.amcsgroup.io`
+
+### Test sample configuration
+
+First, build and install the provider.
+
+```shell
+make install
+```
+
+Then, run the following command to initialize the workspace and apply the sample configuration.
+
+```shell
+terraform init && terraform apply
+```
+
+### Publishing
+- Commit to Azure DevOps
+- `terraform-provider-customercontrol` ADO pipeline will set build number & Git tag and push code to GitHub
+- GitHub Action will trigger on new tag and publish the provider as GitHub release
+- Terraform Registry will pick new release up automatically

@@ -1,0 +1,10 @@
+trigger: none
+
+pool:
+  name: 'Default scale set'
+workspace:
+  clean: all
+variables:
+  - template: templates/variables.yml
+steps:
+  - template: templates/base.yml

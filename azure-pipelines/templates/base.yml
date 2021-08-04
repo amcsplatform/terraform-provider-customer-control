@@ -1,0 +1,55 @@
+steps:
+  - checkout: self
+    clean: true
+    persistCredentials: true
+    path: 'terraform-provider-customercontrol'
+
+  - script: git config --global url."https://devops:$(credentials-devops-pat)@dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo".insteadOf "https://dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo"
+    displayName: 'Git config'
+
+  - task: GoTool@0
+    displayName: 'Use Go 1.16'
+    inputs:
+      version: '1.16'
+
+  - task: Go@0
+    displayName: 'Go get'
+    inputs:
+      command: 'get'
+      arguments: '-d'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - task: TerraformInstaller@0
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: '0.13.7'
+
+  - script: make testacc
+    displayName: 'Run integration tests'
+    env:
+      CUSTOMERCONTROL_URL: 'https://customercontrol-dev.amcsgroup.io'
+      CUSTOMERCONTROL_PRIVATE_KEY: $(credentials-api-private-key)
+
+  - script: go generate
+    displayName: 'Generate docs'
+
+  - powershell: |
+      $changes = git status --porcelain docs
+      $branchName = "$(Build.SourceBranch)" -replace "refs/heads/",""
+      if ("$(Build.Reason)" -eq "PullRequest")
+      {
+        $branchName = "$(system.pullRequest.sourceBranch)" -replace "refs/heads/",""
+      }
+      git config --global user.email "devops@amcsgroup.com"
+      git config --global user.name "DevOps Pipeline"
+      git add docs/.
+      git commit -m "Update docs [skip ci]"
+      git push origin HEAD:$branchName
+
+    displayName: 'Update docs'
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  - task: CheckForUnstagedFiles@0
+    displayName: Check build for unstaged changes
+    inputs:
+      repository: '$(Build.SourcesDirectory)'

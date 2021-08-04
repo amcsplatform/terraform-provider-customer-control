@@ -1,0 +1,4 @@
+variables:
+  - group: amcsplatform_github
+  - group: customercontrol-dev
+  - group: amcsdevops

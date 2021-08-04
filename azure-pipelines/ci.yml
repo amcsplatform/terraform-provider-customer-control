@@ -1,0 +1,31 @@
+parameters:
+  - name: pushToGitHub
+    displayName: 'Push source to GitHub'
+    type: boolean
+    default: false
+
+name: 1.0$(Rev:.r)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+pool:
+  name: 'Default scale set'
+workspace:
+  clean: all
+variables:
+  - template: templates/variables.yml
+steps:
+  - template: templates/base.yml
+
+  - powershell: |
+      $BranchName = "$(Build.SourceBranch)" -Replace "refs/heads/", ""
+      git tag v$(Build.BuildNumber)
+      git push origin v$(Build.BuildNumber)
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git HEAD:$BranchName
+      git push https://anything:$(github_pat)@github.com/amcsplatform/terraform-provider-customercontrol.git v$(Build.BuildNumber)
+    displayName: 'Push changes to GitHub'
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(${{ parameters.pushToGitHub }}, true)))
