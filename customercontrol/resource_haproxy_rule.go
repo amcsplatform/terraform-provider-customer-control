@@ -64,24 +64,28 @@ func ResourceHAProxyRule() *schema.Resource {
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
+							ForceNew:    true,
 						},
 						"is_ssl": {
 							Description: "Enables SSL if true; terminates SSL if false",
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Computed:    true,
+							ForceNew:    true,
 						},
 						"backend_port": {
 							Description: "Backend port",
 							Type:        schema.TypeInt,
 							Optional:    true,
 							Computed:    true,
+							ForceNew:    true,
 						},
 						"set_host": {
 							Description: "Passes host name in the request header to target backends if true",
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Computed:    true,
+							ForceNew:    true,
 						},
 					},
 				},
@@ -95,6 +99,13 @@ func ResourceHAProxyRule() *schema.Resource {
 				ExactlyOneOf: []string{"setup_configuration", "setup_configuration_multi_forward"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"set_host": {
+							Description: "Passes host name in the request header to target backends if true",
+							Type:        schema.TypeBool,
+							Optional:    true,
+							ForceNew:    true,
+							Default:     false,
+						},
 						"servers": {
 							Description: "List of backends",
 							Type:        schema.TypeSet,
@@ -107,18 +118,21 @@ func ResourceHAProxyRule() *schema.Resource {
 										Type:        schema.TypeString,
 										Optional:    true,
 										Computed:    true,
+										ForceNew:    true,
 									},
 									"is_ssl": {
 										Description: "Enables SSL if true; terminates SSL if false",
 										Type:        schema.TypeBool,
 										Optional:    true,
 										Computed:    true,
+										ForceNew:    true,
 									},
 									"port": {
 										Description: "Backend port",
 										Type:        schema.TypeInt,
 										Optional:    true,
 										Computed:    true,
+										ForceNew:    true,
 									},
 								},
 							},
@@ -197,6 +211,7 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 		}
 
 		setupConfigurationMap := map[string]interface{}{
+			"set_host": virtualHostConfiguration.SetHost,
 			"servers": servers,
 		}
 		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
@@ -347,6 +362,8 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 
 	for _, configuration := range c.(*schema.Set).List() {
 		c := configuration.(map[string]interface{})
+
+		setupConfiguration.SetHost = c["set_host"].(bool)
 
 		for _, s := range c["servers"].(*schema.Set).List() {
 			server := s.(map[string]interface{})

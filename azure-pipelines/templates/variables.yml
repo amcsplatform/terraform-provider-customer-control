@@ -7,7 +7,7 @@ variables:
     ${{ if ne(variables['Build.SourceBranchName'], 'master' ) }}:
       value: 0.0
     ${{ if eq(variables['Build.SourceBranchName'], 'master' ) }}:
-      value: 1.0
+      value: 1.1
 
   - name: patchVersion
     value: $[counter(variables['majorMinorVersion'], 0)]

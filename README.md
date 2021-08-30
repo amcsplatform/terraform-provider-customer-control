@@ -13,6 +13,9 @@ If you're new to provider development, a good place to start is the [Extending T
 
 Set up your local environment by installing [Go](https://golang.org/). 
 
+### Updating CustomerControlGoClient
+1. Add `GOPRIVATE=dev.azure.com` environment variable
+2. Run `go get dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git`
 ### Updating documentation
 Azure DevOps PR pipeline will generate and commit updated documentation automatically.
 For local testing, the documentation can be generated with `go generate` command.

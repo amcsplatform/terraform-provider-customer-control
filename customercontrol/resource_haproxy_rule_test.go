@@ -59,6 +59,7 @@ func TestAccHAProxy_MultiForward(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.multi-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_kind", "multi-forward"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.set_host", "false"),
 				),
 			},
 			{
@@ -68,10 +69,11 @@ func TestAccHAProxy_MultiForward(t *testing.T) {
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.multi-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "domain_name", "terraform-provider-test-2.amcsgroup.io"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_kind", "multi-forward"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.0.port", "443"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.1.port", "443"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.0.is_ssl", "true"),
-					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.1.is_ssl", "true"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.set_host", "true"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.0.port", "80"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.1.port", "80"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.0.is_ssl", "false"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.servers.1.is_ssl", "false"),
 				),
 			},
 		},
