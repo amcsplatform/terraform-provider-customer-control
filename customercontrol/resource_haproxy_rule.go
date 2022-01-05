@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	cc "dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
 
@@ -156,6 +159,9 @@ func ResourceHAProxyRule() *schema.Resource {
 				Default:     false,
 			},
 		},
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(5 * time.Minute),
+		},
 	}
 }
 
@@ -212,7 +218,7 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 
 		setupConfigurationMap := map[string]interface{}{
 			"set_host": virtualHostConfiguration.SetHost,
-			"servers": servers,
+			"servers":  servers,
 		}
 		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
 		err = d.Set("setup_configuration_multi_forward", setupConfiguration)
@@ -286,19 +292,26 @@ func CreateHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{})
 		return diag.FromErr(err)
 	}
 
-	// Write configuration
-	log.Printf("[INFO] Writing configration")
-	err = client.WriteConfiguration()
+	// Write configuration, retry for 2 minutes until successful
+	err = resource.Retry(2*time.Minute, func() *resource.RetryError {
+		log.Printf("[INFO] Writing configuration")
+		err = client.WriteConfiguration()
+
+		if err != nil {
+			return resource.RetryableError(err)
+		}
+
+		d.SetId(strconv.Itoa(virtualHostId))
+		d.Set("virtual_host_id", virtualHostId)
+		d.Set("domain_id", domainId)
+		log.Printf("[INFO] Finished creating HAProxy rule")
+
+		return nil
+	})
 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	d.SetId(strconv.Itoa(virtualHostId))
-	d.Set("virtual_host_id", virtualHostId)
-	d.Set("domain_id", domainId)
-
-	log.Printf("[INFO] Finished creating HAProxy rule")
 
 	return diag.Diagnostics{}
 }

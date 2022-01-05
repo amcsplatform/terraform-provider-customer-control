@@ -60,6 +60,7 @@ resource "customercontrol_haproxy_rule" "multi-forward" {
 - **manage_certificate** (Boolean) Generates new SSL certificate for custom domain via LetsEncrypt and auto-renews it if true Defaults to `false`.
 - **setup_configuration** (Block Set, Max: 1) Rule configuration for simple-forward kind (see [below for nested schema](#nestedblock--setup_configuration))
 - **setup_configuration_multi_forward** (Block Set, Max: 1) Rule configuration for multi-forward kind (see [below for nested schema](#nestedblock--setup_configuration_multi_forward))
+- **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 
 ### Read-Only
 
@@ -94,5 +95,14 @@ Optional:
 - **is_ssl** (Boolean) Enables SSL if true; terminates SSL if false
 - **port** (Number) Backend port
 - **url** (String) Backend address or IP to redirect requests to
+
+
+
+<a id="nestedblock--timeouts"></a>
+### Nested Schema for `timeouts`
+
+Optional:
+
+- **create** (String)
 
 
