@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	cc "dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
@@ -108,6 +108,13 @@ func ResourceHAProxyRule() *schema.Resource {
 							Optional:    true,
 							ForceNew:    true,
 							Default:     false,
+						},
+						"load_balance": {
+							Description: "Describes the load balance algorithm used",
+							Type:        schema.TypeString,
+							Optional:    true,
+							ForceNew:    true,
+							Default:     "RoundRobin",
 						},
 						"servers": {
 							Description: "List of backends",
@@ -217,8 +224,9 @@ func ReadHAProxyRule(_ context.Context, d *schema.ResourceData, m interface{}) d
 		}
 
 		setupConfigurationMap := map[string]interface{}{
-			"set_host": virtualHostConfiguration.SetHost,
-			"servers":  servers,
+			"set_host":     virtualHostConfiguration.SetHost,
+			"load_balance": virtualHostConfiguration.LoadBalance,
+			"servers":      servers,
 		}
 		setupConfiguration = append(setupConfiguration, setupConfigurationMap)
 		err = d.Set("setup_configuration_multi_forward", setupConfiguration)
@@ -377,6 +385,8 @@ func makeVirtualHostConfigurationMultiBackends(d *schema.ResourceData) *cc.Virtu
 		c := configuration.(map[string]interface{})
 
 		setupConfiguration.SetHost = c["set_host"].(bool)
+
+		setupConfiguration.LoadBalance = c["load_balance"].(string)
 
 		for _, s := range c["servers"].(*schema.Set).List() {
 			server := s.(map[string]interface{})

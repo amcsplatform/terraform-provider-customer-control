@@ -3,7 +3,8 @@ resource "customercontrol_haproxy_rule" "multi-forward" {
   setup_kind  = "multi-forward"
 
   setup_configuration_multi_forward {
-    set_host = true
+    set_host     = true
+    load_balance = "Source"
 
     servers {
       url    = "grafana-dev.amcsgroup.io"

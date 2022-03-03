@@ -84,6 +84,7 @@ Optional:
 
 Optional:
 
+- **load_balance** (String) Describes the load balance algorithm used Defaults to `RoundRobin`.
 - **servers** (Block Set) List of backends (see [below for nested schema](#nestedblock--setup_configuration_multi_forward--servers))
 - **set_host** (Boolean) Passes host name in the request header to target backends if true Defaults to `false`.
 

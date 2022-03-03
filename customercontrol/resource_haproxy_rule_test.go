@@ -3,9 +3,10 @@ package customercontrol
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"strconv"
 	"testing"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	cc "dev.azure.com/amcsgroup/DevOps/_git/CustomerControlClientGo.git"
 
@@ -60,6 +61,7 @@ func TestAccHAProxy_MultiForward(t *testing.T) {
 					testAccHAProxyRuleCheckExists("customercontrol_haproxy_rule.multi-forward", &domainId, &virtualHostId),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_kind", "multi-forward"),
 					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.set_host", "false"),
+					resource.TestCheckResourceAttr("customercontrol_haproxy_rule.multi-forward", "setup_configuration_multi_forward.0.load_balance", "Source"),
 				),
 			},
 			{

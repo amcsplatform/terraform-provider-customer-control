@@ -73,6 +73,20 @@ func DataSourceHAProxyRule() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"set_host": {
+							Description: "Passes host name in the request header to target backends if true",
+							Type:        schema.TypeBool,
+							Optional:    true,
+							ForceNew:    true,
+							Default:     false,
+						},
+						"load_balance": {
+							Description: "Describes the load balance algorithm used",
+							Type:        schema.TypeString,
+							Optional:    true,
+							ForceNew:    true,
+							Default:     "RoundRobin",
+						},
 						"servers": {
 							Description: "List of backends",
 							Type:        schema.TypeSet,

@@ -55,7 +55,9 @@ Read-Only:
 
 Read-Only:
 
+- **load_balance** (String)
 - **servers** (Set of Object) (see [below for nested schema](#nestedobjatt--setup_configuration_multi_forward--servers))
+- **set_host** (Boolean)
 
 <a id="nestedobjatt--setup_configuration_multi_forward--servers"></a>
 ### Nested Schema for `setup_configuration_multi_forward.servers`
